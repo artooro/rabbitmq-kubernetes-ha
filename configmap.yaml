@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+data:
+  enabled_plugins: |
+      [rabbitmq_management,rabbitmq_peer_discovery_k8s,rabbitmq_mqtt].
+
+  rabbitmq.conf: |
+      ## Clustering
+      cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+      cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
+      cluster_formation.k8s.hostname_suffix = .rabbitmq.default.svc.cluster.local
+      cluster_formation.k8s.address_type = hostname
+      cluster_formation.node_cleanup.interval = 10
+      cluster_formation.node_cleanup.only_log_warning = true
+      cluster_partition_handling = autoheal
+      ## queue master locator 
+      queue_master_locator=min-masters
+      ## enable guest user  
+      loopback_users.guest = false
+      #general
+      log.console = true
+      log.console.level = debug
+      ## tls
+      listeners.ssl.default = 5671
+      ssl_options.cacertfile = /usr/local/etc/tls/tls.crt
+      ssl_options.certfile = /usr/local/etc/tls/tls.crt
+      ssl_options.keyfile = /usr/local/etc/tls/tls.key
+      ssl_options.verify = verify_peer
+      ssl_options.fail_if_no_peer_cert = false
+      management.listener.port = 15672
+      management.listener.ssl = true
+      management.listener.ssl_opts.cacertfile = /usr/local/etc/tls/tls.crt
+      management.listener.ssl_opts.certfile = /usr/local/etc/tls/tls.crt
+      management.listener.ssl_opts.keyfile = /usr/local/etc/tls/tls.key
+      ## mqtt
+      mqtt.vhost = mqtt
+      mqtt.listeners.tcp.default = 1883
+      mqtt.listeners.ssl.default = 8883
+      ssl_options.cacertfile   = /usr/local/etc/tls/tls.crt
+      ssl_options.certfile   = /usr/local/etc/tls/tls.crt
+      ssl_options.keyfile    = /usr/local/etc/tls/tls.key
+      ssl_options.verify     = verify_peer
+      ssl_options.fail_if_no_peer_cert = false
+
+   
